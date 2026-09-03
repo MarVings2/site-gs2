@@ -43,4 +43,34 @@ async function autenticarUau() {
   };
 }
 
-module.exports = { autenticarUau };
+async function chamarUauAutenticado(path, body) {
+  const tokenIntegracao = process.env.UAU_TOKEN_INTEGRACAO;
+  const { token: tokenSessao } = await autenticarUau();
+
+  const url = `${BASE_URL}/api/v${API_VERSION}/${path}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: tokenSessao,
+      "X-INTEGRATION-Authorization": tokenIntegracao,
+    },
+    body: JSON.stringify(body),
+  });
+
+  const bodyText = await response.text();
+  let parsedBody = bodyText;
+  try {
+    parsedBody = JSON.parse(bodyText);
+  } catch (_) {}
+
+  if (!response.ok) {
+    const detalhe = (parsedBody && (parsedBody.Mensagem || parsedBody.Descricao)) || bodyText;
+    throw new Error(`Falha ao chamar ${path} (status ${response.status}): ${detalhe}`);
+  }
+
+  return parsedBody;
+}
+
+module.exports = { autenticarUau, chamarUauAutenticado };
