@@ -1,4 +1,4 @@
-const { chamarUauAutenticado } = require("../shared/uauClient");
+const { validarRequisicao } = require("../shared/authClient");
 
 module.exports = async function (context, req) {
   const empresa = req.query.empresa;
