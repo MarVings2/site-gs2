@@ -1,6 +1,16 @@
+const { chamarUauAutenticado } = require("../shared/uauClient");
 const { validarRequisicao } = require("../shared/authClient");
 
 module.exports = async function (context, req) {
+  const sessao = validarRequisicao(req);
+if (!sessao) {
+  context.res = {
+    status: 401,
+    headers: { "Content-Type": "application/json" },
+    body: { sucesso: false, mensagem: "Não autenticado. Faça login em /api/Login e envie o token no header Authorization: Bearer <token>." },
+  };
+  return;
+}
   const empresa = req.query.empresa;
   const obra = req.query.obra;
   const dias = parseInt(req.query.dias || "90", 10);
