@@ -54,9 +54,7 @@ function verificarToken(token) {
 }
 
 function validarRequisicao(req) {
-  const authHeader = req.headers["authorization"] || req.headers["Authorization"];
-  if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
-  const token = authHeader.substring("Bearer ".length);
+  const token = req.headers["x-portal-token"] || req.headers["X-Portal-Token"];
   return verificarToken(token);
 }
 
